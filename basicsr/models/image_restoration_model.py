@@ -266,20 +266,22 @@ class ImageCleanModel(BaseModel):
 
             if save_img:
                 if self.opt["is_train"]:
-
+                    save_lq_img_path = osp.join(
+                        self.opt["path"]["visualization"],
+                        img_name,
+                        f"{img_name}_{current_iter}_lq.png",
+                    )
                     save_img_path = osp.join(
                         self.opt["path"]["visualization"],
                         img_name,
                         f"{img_name}_{current_iter}.png",
                     )
-
                     save_gt_img_path = osp.join(
                         self.opt["path"]["visualization"],
                         img_name,
                         f"{img_name}_{current_iter}_gt.png",
                     )
                 else:
-
                     save_lq_img_path = osp.join(
                         self.opt["path"]["visualization"],
                         dataset_name,
