@@ -8,3 +8,8 @@
 *.npy
 .DS_Store
 
+*.log
+tb_logger/
+results/
+.eggs/
+experiments/

@@ -15,6 +15,7 @@ from basicsr.utils import get_root_logger
 #     #       'Otherwise install BasicSR with compiling dcn.')
 #
 
+
 @torch.no_grad()
 def default_init_weights(module_list, scale=1, bias_fill=0, **kwargs):
     """Initialize network weights.
@@ -62,6 +63,8 @@ def make_layer(basic_block, num_basic_block, **kwarg):
     return nn.Sequential(*layers)
 
 
+# Conv 두 개랑 중간에 ReLU 한 개로 이루어진 간단한 Residual Block
+# 형상은 입력과 동일하게 유지
 class ResidualBlockNoBN(nn.Module):
     """Residual block without BN.
 
@@ -93,6 +96,8 @@ class ResidualBlockNoBN(nn.Module):
         return identity + out * self.res_scale
 
 
+# Conv + PixelShuffle로 이루어진 간단한 Upsample Block
+# 해상도는 2배 증가, 채널 수는 유지
 class Upsample(nn.Sequential):
     """Upsample module.
 
@@ -111,16 +116,18 @@ class Upsample(nn.Sequential):
             m.append(nn.Conv2d(num_feat, 9 * num_feat, 3, 1, 1))
             m.append(nn.PixelShuffle(3))
         else:
-            raise ValueError(f'scale {scale} is not supported. '
-                             'Supported scales: 2^n and 3.')
+            raise ValueError(
+                f"scale {scale} is not supported. " "Supported scales: 2^n and 3."
+            )
         super(Upsample, self).__init__(*m)
 
 
-def flow_warp(x,
-              flow,
-              interp_mode='bilinear',
-              padding_mode='zeros',
-              align_corners=True):
+########## 여기서부터는 안 쓰임! ##########
+
+
+def flow_warp(
+    x, flow, interp_mode="bilinear", padding_mode="zeros", align_corners=True
+):
     """Warp an image or feature map with optical flow.
 
     Args:
@@ -140,8 +147,8 @@ def flow_warp(x,
     _, _, h, w = x.size()
     # create mesh grid
     grid_y, grid_x = torch.meshgrid(
-        torch.arange(0, h).type_as(x),
-        torch.arange(0, w).type_as(x))
+        torch.arange(0, h).type_as(x), torch.arange(0, w).type_as(x)
+    )
     grid = torch.stack((grid_x, grid_y), 2).float()  # W(x), H(y), 2
     grid.requires_grad = False
 
@@ -155,17 +162,14 @@ def flow_warp(x,
         vgrid_scaled,
         mode=interp_mode,
         padding_mode=padding_mode,
-        align_corners=align_corners)
+        align_corners=align_corners,
+    )
 
     # TODO, what if align_corners=False
     return output
 
 
-def resize_flow(flow,
-                size_type,
-                sizes,
-                interp_mode='bilinear',
-                align_corners=False):
+def resize_flow(flow, size_type, sizes, interp_mode="bilinear", align_corners=False):
     """Resize a flow according to ratio or shape.
 
     Args:
@@ -186,13 +190,14 @@ def resize_flow(flow,
         Tensor: Resized flow.
     """
     _, _, flow_h, flow_w = flow.size()
-    if size_type == 'ratio':
+    if size_type == "ratio":
         output_h, output_w = int(flow_h * sizes[0]), int(flow_w * sizes[1])
-    elif size_type == 'shape':
+    elif size_type == "shape":
         output_h, output_w = sizes[0], sizes[1]
     else:
         raise ValueError(
-            f'Size type should be ratio or shape, but got type {size_type}.')
+            f"Size type should be ratio or shape, but got type {size_type}."
+        )
 
     input_flow = flow.clone()
     ratio_h = output_h / flow_h
@@ -203,13 +208,14 @@ def resize_flow(flow,
         input=input_flow,
         size=(output_h, output_w),
         mode=interp_mode,
-        align_corners=align_corners)
+        align_corners=align_corners,
+    )
     return resized_flow
 
 
 # TODO: may write a cpp file
 def pixel_unshuffle(x, scale):
-    """ Pixel unshuffle.
+    """Pixel unshuffle.
 
     Args:
         x (Tensor): Input feature with shape (b, c, hh, hw).
