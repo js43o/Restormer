@@ -13,3 +13,4 @@ tb_logger/
 results/
 .eggs/
 experiments/
+wandb/
