@@ -16,14 +16,14 @@ datasets:
 
     gt_size: 128
 
-    dataroot_lq: /vcl4/Jiseung/datasets/celeba-hq_custom-aligned_validation/lq
-    dataroot_gt: /vcl4/Jiseung/datasets/celeba-hq_custom-aligned_validation/gt
+    dataroot_lq: /vcl2/Jiseung/datasets/celeba-hq_custom-aligned_validation/lq
+    dataroot_gt: /vcl2/Jiseung/datasets/celeba-hq_custom-aligned_validation/gt
 
     is_train: False
 
 # network structures
 network_g:
-  type: Restormer
+  type: QueryReuseRestormer
   inp_channels: 3
   out_channels: 3
   dim: 32
@@ -37,7 +37,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: experiments/BlindFFHQ_6.6M/models/net_g_300000.pth
+  pretrain_network_g: experiments/BlindFFHQ_11-1_skip-query/models/net_g_232000.pth
   strict_load_g: true
   resume_state: ~
 

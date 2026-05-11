@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
+export WANDB_API_KEY=90142575dfa8ad97bc4b974e5757895006e41638
+export PYTHONPATH=$(pwd)
 
-torchrun --standalone --nproc_per_node=2 --master_port=7679 basicsr/train.py -opt options/train_blind_ffhq_6m.yml --launcher pytorch
+torchrun --standalone --nproc_per_node=1 --master_port=7679 basicsr/train.py -opt options/train_blind_ffhq_6m_64px.yml --launcher pytorch

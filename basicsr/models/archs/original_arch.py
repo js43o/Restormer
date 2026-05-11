@@ -10,7 +10,6 @@ import numbers
 
 from einops import rearrange
 
-
 ##########################################################################
 ## Layer Norm
 
@@ -250,6 +249,7 @@ class Restormer(nn.Module):
         dual_pixel_task=False,  ## True for dual-pixel defocus deblurring only. Also set inp_channels=6
     ):
 
+        print("🍎 Original Restormer architecture.")
         super(Restormer, self).__init__()
 
         self.patch_embed = OverlapPatchEmbed(inp_channels, dim)

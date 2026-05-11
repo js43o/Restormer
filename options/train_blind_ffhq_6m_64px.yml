@@ -1,8 +1,8 @@
 # general settings
-name: BlindFFHQ_6M
+name: BlindFFHQ_6M_64px
 model_type: ImageCleanModel
 scale: 1
-num_gpu: 2 # set num_gpu: 0 for cpu mode
+num_gpu: 1 # set num_gpu: 0 for cpu mode
 manual_seed: 42
 
 # dataset and data loader settings
@@ -17,7 +17,7 @@ datasets:
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 8
-    batch_size_per_gpu: 32
+    batch_size_per_gpu: 128
 
     ### -------------Progressive training--------------------------
     # mini_batch_sizes: [8, 5, 4, 2, 1, 1] # Batch size per gpu
@@ -27,16 +27,17 @@ datasets:
     ### ------------------------------------------------------------
 
     ### ------- Training on single fixed-patch size 128x128---------
-    mini_batch_sizes: [32]
-    iters: [300000]
-    gt_size: 128
-    gt_sizes: [128]
+    mini_batch_sizes: [128]
+    iters: [100000]
+    gt_size: 64
+    gt_sizes: [64]
     ### ------------------------------------------------------------
 
     dataset_enlarge_ratio: 1
-    prefetch_mode: ~
+    prefetch_mode: cuda
+    pin_memory: true
 
-    dataroot: /vcl4/Jiseung/datasets/ffhq_custom-aligned
+    dataroot: /vcl2/Jiseung/datasets/ffhq_custom-aligned
     blur_kernel_size: [19, 20]
     kernel_list: ["iso", "aniso"]
     kernel_prob: [0.5, 0.5]
@@ -50,9 +51,9 @@ datasets:
   val:
     name: LFW
     type: BlindFFHQDataset
-    gt_size: 128
+    gt_size: 64
 
-    dataroot: /vcl4/Jiseung/datasets/lfw_custom-aligned
+    dataroot: /vcl2/Jiseung/datasets/lfw_custom-aligned
     blur_kernel_size: [19, 20]
     kernel_list: ["iso", "aniso"]
     kernel_prob: [0.5, 0.5]
@@ -85,11 +86,11 @@ path:
 
 # training settings
 train:
-  total_iter: 300000
+  total_iter: 100000
   warmup_iter: -1 # no warm up
   use_grad_clip: true
 
-  # Split 300k iterations into two cycles.
+  # Split 100k iterations into two cycles.
   # 1st cycle: fixed 3e-4 LR for 92k iters.
   # 2nd cycle: cosine annealing (3e-4 to 1e-6) for 208k iters.
   scheduler:
